@@ -1,5 +1,5 @@
 var sqlInjectionModel;
-var myChart 
+var myChart
 
 // 文字轉陣列
 function santenceToVector(inputSantences) {
@@ -28,27 +28,31 @@ function prediction(stringInput) {
     return predictResult.dataSync()[0]//將Tensor轉成一般數字輸出
 }
 
+//更新圖表
+async function updateChart() {
+    let textArea = document.getElementById("textarea1")
+    let resultElement = document.getElementById("resultElement")
+    let text = textArea.value
+    let result = await prediction(text)
+    resultElement.innerHTML = result
+    setPieChart(result)
+}
+
 //設置文字修改偵聽器
 function setChangeListener() {
     console.log("Set change listener")
     let textArea = document.getElementById("textarea1")
-    textArea.addEventListener('keyup', async function () {
-        let resultElement = document.getElementById("resultElement")
-        let text = textArea.value
-        let result = await prediction(text)
-        resultElement.innerHTML = result
-        setPieChart(result)
-    });
+    textArea.addEventListener('keyup', updateChart);
 }
 
 //設置圓餅圖
 function setPieChart(inputNumber) {
-    try{
+    try {
         myChart.destroy()
-    }catch(e){
+    } catch (e) {
 
-    }    
-    inputNumber = inputNumber*100
+    }
+    inputNumber = inputNumber * 100
     const data = {
         labels: [
             '威脅',
@@ -56,7 +60,7 @@ function setPieChart(inputNumber) {
         ],
         datasets: [{
             label: 'My First Dataset',
-            data: [inputNumber,100-inputNumber],
+            data: [inputNumber, 100 - inputNumber],
             backgroundColor: [
                 'rgb(255, 99, 132)',
                 'rgb(54, 162, 235)',
@@ -80,5 +84,5 @@ window.onload = async function () {
     // 載入模型
     sqlInjectionModel = await tf.loadLayersModel('./models/model.json');
     setChangeListener()
-    setPieChart(0)
+    updateChart()
 }
