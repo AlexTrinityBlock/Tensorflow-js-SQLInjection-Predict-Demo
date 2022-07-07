@@ -31,7 +31,7 @@ function symbolToVector(inputSantences) {
         if (singleChar > -1) {
             charNumber = alphabet.indexOf(singleChar)
             result.push(charNumber)
-        }else{
+        } else {
             charNumber = alphabet.indexOf(singleChar)
             result.push(0)
         }
@@ -45,12 +45,21 @@ function symbolToVector(inputSantences) {
 }
 
 // 預測器
-function prediction(stringInput) {
-    let santenceVectorArray = santenceToVector(stringInput);
-    let santenceVectorTensor = tf.tensor(santenceVectorArray);
-    let symbolVectorArray = symbolToVector(stringInput);
-    let symbolVectorTensor = tf.tensor(symbolVectorArray);
-    let predictResult = sqlInjectionModel.predict([santenceVectorTensor, symbolVectorTensor])
+function prediction(stringInput, InputType) {
+
+    let predictResult;
+
+    if (InputType == 'TextAndSymbol') {
+        let santenceVectorArray = santenceToVector(stringInput);
+        let santenceVectorTensor = tf.tensor(santenceVectorArray);
+        let symbolVectorArray = symbolToVector(stringInput);
+        let symbolVectorTensor = tf.tensor(symbolVectorArray);
+        predictResult = sqlInjectionModel.predict([santenceVectorTensor, symbolVectorTensor])
+    } else {
+        let santenceVectorArray = santenceToVector(stringInput);
+        let santenceVectorTensor = tf.tensor(santenceVectorArray);
+        predictResult = sqlInjectionModel.predict(santenceVectorTensor)
+    }
     return predictResult.dataSync()[0]//將Tensor轉成一般數字輸出
 }
 
@@ -59,7 +68,7 @@ async function updateChart() {
     let textArea = document.getElementById("textarea1")
     let resultElement = document.getElementById("resultElement")
     let text = textArea.value
-    let result = await prediction(text)
+    let result = await prediction(text, 'Text')
     resultElement.innerHTML = result
     setPieChart(result)
 }
