@@ -20,11 +20,37 @@ function santenceToVector(inputSantences) {
     return [result]
 }
 
+//符號轉陣列
+function symbolToVector(inputSantences) {
+    let result = []
+    symbol = " -,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}"
+    // 轉換句子為數值
+    for (i = 0; i < inputSantences.length; i++) {
+        singleChar = inputSantences.charAt(i)
+
+        if (singleChar > -1) {
+            charNumber = alphabet.indexOf(singleChar)
+            result.push(charNumber)
+        }else{
+            charNumber = alphabet.indexOf(singleChar)
+            result.push(0)
+        }
+    }
+    // 將長度填充為1000 
+    let diff = 1000 - result.length
+    for (i = 0; i < diff; i++) {
+        result.push(0)
+    }
+    return [result]
+}
+
 // 預測器
 function prediction(stringInput) {
-    let santenceVectorArray = santenceToVector(stringInput)
+    let santenceVectorArray = santenceToVector(stringInput);
     let santenceVectorTensor = tf.tensor(santenceVectorArray);
-    let predictResult = sqlInjectionModel.predict(santenceVectorTensor)
+    let symbolVectorArray = symbolToVector(stringInput);
+    let symbolVectorTensor = tf.tensor(symbolVectorArray);
+    let predictResult = sqlInjectionModel.predict([santenceVectorTensor, symbolVectorTensor])
     return predictResult.dataSync()[0]//將Tensor轉成一般數字輸出
 }
 
@@ -43,6 +69,7 @@ function setChangeListener() {
     console.log("Set change listener")
     let textArea = document.getElementById("textarea1")
     textArea.addEventListener('keyup', updateChart);
+    textArea.addEventListener('keydown', updateChart);
 }
 
 //設置圓餅圖
