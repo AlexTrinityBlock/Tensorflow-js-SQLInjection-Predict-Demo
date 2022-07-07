@@ -70,6 +70,7 @@ function setChangeListener() {
     let textArea = document.getElementById("textarea1")
     textArea.addEventListener('keyup', updateChart);
     textArea.addEventListener('keydown', updateChart);
+    textArea.addEventListener('keypress', updateChart);
 }
 
 //設置圓餅圖
